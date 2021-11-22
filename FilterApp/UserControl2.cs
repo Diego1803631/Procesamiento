@@ -1,15 +1,7 @@
 ﻿using Emgu.CV;
-using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FilterApp
@@ -24,11 +16,12 @@ namespace FilterApp
         public UserControl2()
         {
             InitializeComponent();
-            cbFiltervid.Items.Add("Lapiciano");
+            cbFiltervid.Items.Add("Laplaciano");
             cbFiltervid.Items.Add("Substracción de Media");
             cbFiltervid.Items.Add("Direccional NS");
             cbFiltervid.Items.Add("Sobel");
-            cbFiltervid.Items.Add("Menos-Lapiciano");
+            cbFiltervid.Items.Add("Menos-Laplaciano");
+            cbFiltervid.Items.Add("Negativo");
         }
 
         private void btnImpvid_Click(object sender, EventArgs e)
@@ -45,7 +38,15 @@ namespace FilterApp
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = true;
+            if (currentFrame != null)
+            {
+                timer1.Enabled = true;
+            }
+            else
+            {
+                MessageBox.Show("No se agregó ningún video.", "Advertencia");
+            }
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -53,11 +54,12 @@ namespace FilterApp
             currentFrame = video.QueryFrame();
             if (currentFrame != null)
             {
-                if(selected == null)
+                if (selected == null)
                 {
                     imageBox1.Image = currentFrame;
                 }
-                else {
+                else
+                {
                     temp = currentFrame.Bitmap;
                     var classVideo = new Video(temp, imageBox1);
                     classVideo.addFilter(selected);
@@ -68,7 +70,7 @@ namespace FilterApp
                 timer1.Enabled = false;
             }
 
-            
+
         }
 
         private void btnStop_Click(object sender, EventArgs e)

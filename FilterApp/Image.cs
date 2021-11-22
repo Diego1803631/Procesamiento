@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-using System.Drawing.Drawing2D;
 
 namespace FilterApp
 {
@@ -41,8 +34,8 @@ namespace FilterApp
         {
             switch (filtername)
             {
-                case "Lapiciano":
-                    Lapiciano();
+                case "Laplaciano":
+                    Laplaciano();
                     break;
                 case "Substracción de Media":
                     SubstracciónMedia();
@@ -53,435 +46,237 @@ namespace FilterApp
                 case "Sobel":
                     Sobel();
                     break;
-                case "Menos-Lapiciano":
-                    MenosLapiciano();
+                case "Menos-Laplaciano":
+                    MenosLaplaciano();
+                    break;
+                case "Negativo":
+                    Negativo();
                     break;
                 default:
                     break;
             }
-            
-        }
 
-        //Lapiciano
-        private void Lapiciano()
-        {
-            Bitmap resultBitmap = ConvolutionFilter(image, Laplacian3x3, 1.0, 0, true);
-            pictureBox.Image = resultBitmap;
         }
-        public static double[,] Laplacian3x3
+        //Negativo
+        private void Negativo()
         {
-            get
+            for (int y = 0; y < image.Height; y++)
             {
-                return new double[,]
-                { 
-                    { 0, 1, 0, },
-                    { 1, -4, 1, },
-                    { 0, 1, 0, }, 
-                };
+                for (int x = 0; x < image.Width; x++)
+                {
+                    //get pixel value
+                    Color p = image.GetPixel(x, y);
+
+                    //extract ARGB value from p
+                    int a = p.A;
+                    int r = p.R;
+                    int g = p.G;
+                    int b = p.B;
+
+                    //find negative value
+                    r = 255 - r;
+                    g = 255 - g;
+                    b = 255 - b;
+
+                    //set new ARGB value in pixel
+                    image.SetPixel(x, y, Color.FromArgb(a, r, g, b));
+                }
             }
+            pictureBox.Image = image;
+        }
+        //Lapiciano
+        private void Laplaciano()
+        {
+            int[,] matrix = new int[,] {
+                { 0, 1, 0, },
+                { 1, -4, 1, },
+                { 0, 1, 0, }
+            };
+            Bitmap resultBitmap = Convulation(image, matrix, 1, true);
+            pictureBox.Image = resultBitmap;
         }
         //Substracción de Media
         private void SubstracciónMedia()
         {
-            Bitmap resultBitmap = ConvolutionFilter(image, SubstractionM, 1.0, 0, true);
+            int[,] matrix = new int[,] {
+                { -1, -1, -1, },
+                { -1, 8, -1, },
+                { -1, -1, -1, }
+            };
+            Bitmap resultBitmap = Convulation(image, matrix, 1, true);
             pictureBox.Image = resultBitmap;
-        }
-        public static double[,] SubstractionM
-        {
-            get
-            {
-                return new double[,]
-                {
-                    { -1, -1, -1, },
-                    { -1, 8, -1, },
-                    { -1, -1, -1, },
-                };
-            }
         }
         //Direccional NS
         private void DireccionalNS()
         {
-            Bitmap resultBitmap = ConvolutionFilter(image, NSHorizontal, 1.0, 0, true);
+            int[,] matrix = new int[,] {
+                { 1,  1,  1, },
+                { 1,  -2,  1, },
+                { -1,  -1,  -1, }
+            };
+            Bitmap resultBitmap = Convulation(image, matrix, 1, true);
             pictureBox.Image = resultBitmap;
-        }
-        public static double[,] NSHorizontal
-        {
-            get
-            {
-                return new double[,]
-                {
-                    { 1,  1,  1, },
-                    { 1,  -2,  1, },
-                    { -1,  -1,  -1, },
-                };
-            }
-        }
-        public static double[,] NSVertical
-        {
-            get
-            {
-                return new double[,]
-                {
-                    {  -1,  1,  1, },
-                    {  -1,  -2,  1, },
-                    { -1, 1, 1, },
-                };
-            }
         }
         //Sobel
         private void Sobel()
         {
-            Bitmap resultBitmap = ConvolutionFilter(image, Sobel3x3Horizontal, Sobel3x3Vertical, 1.0, 0, true);
+            int[,] matrix = new int[,] {
+                { -1,  0,  1, },
+                { -2,  0,  2, },
+                { -1,  0,  1, }
+            };
+            Bitmap resultBitmap = Convulation(image, matrix, 1, true);
             pictureBox.Image = resultBitmap;
-        }
-        public static double[,] Sobel3x3Horizontal
-        {
-            get
-            {
-                return new double[,]
-                { 
-                    { -1,  0,  1, },
-                    { -2,  0,  2, },
-                    { -1,  0,  1, }, 
-                };
-            }
-        }
-        public static double[,] Sobel3x3Vertical
-        {
-            get
-            {
-                return new double[,]
-                { 
-                    {  1,  2,  1, },
-                    {  0,  0,  0, },
-                    { -1, -2, -1, }, 
-                };
-            }
         }
         //Menos-Lapiciano
-        private void MenosLapiciano()
+        private void MenosLaplaciano()
         {
-            Bitmap resultBitmap = ConvolutionFilter(image, MenosLap, 1.0, 0, false);
+            int[,] matrix = new int[,] {
+                { 0, -1, 0, },
+                { -1, 5, -1, },
+                { 0, -1, 0, }
+            };
+            Bitmap resultBitmap = Convulation(image, matrix, 1, false);
             pictureBox.Image = resultBitmap;
         }
-        public static double[,] MenosLap
-        {
-            get
-            {
-                return new double[,]
-                {
-                    { 0, -1, 0, },
-                    { -1, 5, -1, },
-                    { 0, -1, 0, },
-                };
-            }
-        }
         //Circunvolución
-        private static Bitmap ConvolutionFilter(Bitmap sourceBitmap, double[,] filterMatrix, double factor = 1, int bias = 0, bool grayscale = false)
+        public static Bitmap Convulation(Bitmap sourceBitmap, int[,] matrixFiltro, int div, bool gris)
         {
-            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
-            byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
-            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
-            sourceBitmap.UnlockBits(sourceData);
-            if (grayscale == true)
-            {
-                float rgb = 0;
-                for (int k = 0; k < pixelBuffer.Length; k += 4)
-                {
-                    rgb = pixelBuffer[k] * 0.11f;
-                    rgb += pixelBuffer[k + 1] * 0.59f;
-                    rgb += pixelBuffer[k + 2] * 0.3f;
+            Bitmap img = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+            Color imgPixel;
+            int Red, Green, Blue;
+            int pixelGris;
 
-                    pixelBuffer[k] = (byte)rgb;
-                    pixelBuffer[k + 1] = pixelBuffer[k];
-                    pixelBuffer[k + 2] = pixelBuffer[k];
-                    pixelBuffer[k + 3] = 255;
+            if (gris)
+            {
+                for (int x = 0; x < img.Width; x++)
+                {
+                    for (int y = 0; y < img.Height; y++)
+                    {
+                        imgPixel = sourceBitmap.GetPixel(x, y);
+
+                        Red = imgPixel.R;
+                        Green = imgPixel.G;
+                        Blue = imgPixel.B;
+
+                        pixelGris = (Red + Green + Blue) / 3;
+
+                        if (pixelGris > 255)
+                            pixelGris = 255;
+                        else if (pixelGris < 0)
+                            pixelGris = 0;
+
+                        img.SetPixel(x, y, Color.FromArgb(pixelGris, pixelGris, pixelGris));
+                    }
                 }
             }
 
-            double blue = 0.0;
-            double green = 0.0;
-            double red = 0.0;
-
-            int filterWidth = filterMatrix.GetLength(1);
-            int filterHeight = filterMatrix.GetLength(0);
-
-            int filterOffset = (filterWidth - 1) / 2;
-            int calcOffset = 0;
-            int byteOffset = 0;
-
-            for (int offsetY = filterOffset; offsetY <
-                sourceBitmap.Height - filterOffset; offsetY++)
+            for (int x = 1; x < img.Width - 1; x++)
             {
-                for (int offsetX = filterOffset; offsetX <
-                    sourceBitmap.Width - filterOffset; offsetX++)
+                for (int y = 1; y < img.Height - 1; y++)
                 {
-                    blue = 0;
-                    green = 0;
-                    red = 0;
+                    Color[] color = {
+                        sourceBitmap.GetPixel(x - 1, y - 1),
+                        sourceBitmap.GetPixel(x, y - 1),
+                        sourceBitmap.GetPixel(x + 1, y - 1),
+                        sourceBitmap.GetPixel(x - 1, y),
+                        sourceBitmap.GetPixel(x, y),
+                        sourceBitmap.GetPixel(x + 1, y),
+                        sourceBitmap.GetPixel(x - 1, y + 1),
+                        sourceBitmap.GetPixel(x, y + 1),
+                        sourceBitmap.GetPixel(x + 1, y + 1)
+                    };
 
-                    byteOffset = offsetY * sourceData.Stride + offsetX * 4;
+                    color[0] = sourceBitmap.GetPixel(x - 1, y - 1);
+                    color[1] = sourceBitmap.GetPixel(x, y - 1);
+                    color[2] = sourceBitmap.GetPixel(x + 1, y - 1);
+                    color[3] = sourceBitmap.GetPixel(x - 1, y);
+                    color[4] = sourceBitmap.GetPixel(x, y);
+                    color[5] = sourceBitmap.GetPixel(x + 1, y);
+                    color[6] = sourceBitmap.GetPixel(x - 1, y + 1);
+                    color[7] = sourceBitmap.GetPixel(x, y + 1);
+                    color[8] = sourceBitmap.GetPixel(x + 1, y + 1);
 
-                    for (int filterY = -filterOffset;
-                        filterY <= filterOffset; filterY++)
+                    //rojo
+                    int sumaRojo = color[0].R * matrixFiltro[0, 0]
+                                 + color[1].R * matrixFiltro[1, 0]
+                                 + color[2].R * matrixFiltro[2, 0]
+                                 + color[3].R * matrixFiltro[0, 1]
+                                 + color[4].R * matrixFiltro[1, 1]
+                                 + color[5].R * matrixFiltro[2, 1]
+                                 + color[6].R * matrixFiltro[0, 2]
+                                 + color[7].R * matrixFiltro[1, 2]
+                                 + color[8].R * matrixFiltro[2, 2];
+
+                    sumaRojo = sumaRojo / div;
+                    if (sumaRojo > 255)
                     {
-                        for (int filterX = -filterOffset;
-                            filterX <= filterOffset; filterX++)
-                        {
-                            calcOffset = byteOffset + (filterX * 4) + (filterY * sourceData.Stride);
-                            blue += (double)(pixelBuffer[calcOffset]) * filterMatrix[filterY + filterOffset, filterX + filterOffset];
-                            green += (double)(pixelBuffer[calcOffset + 1]) * filterMatrix[filterY + filterOffset, filterX + filterOffset];
-                            red += (double)(pixelBuffer[calcOffset + 2]) * filterMatrix[filterY + filterOffset, filterX + filterOffset];
-                        }
+                        sumaRojo = 255;
+                    }
+                    else if (sumaRojo < 0)
+                    {
+                        sumaRojo = 0;
                     }
 
-                    blue = factor * blue + bias;
-                    green = factor * green + bias;
-                    red = factor * red + bias;
+                    //verde
+                    int sumaVerde = color[0].R * matrixFiltro[0, 0]
+                                  + color[1].R * matrixFiltro[1, 0]
+                                  + color[2].R * matrixFiltro[2, 0]
+                                  + color[3].R * matrixFiltro[0, 1]
+                                  + color[4].R * matrixFiltro[1, 1]
+                                  + color[5].R * matrixFiltro[2, 1]
+                                  + color[6].R * matrixFiltro[0, 2]
+                                  + color[7].R * matrixFiltro[1, 2]
+                                  + color[8].R * matrixFiltro[2, 2];
 
-                    if (blue > 255)
-                    { blue = 255; }
-                    else if (blue < 0)
-                    { blue = 0; }
-
-                    if (green > 255)
-                    { green = 255; }
-                    else if (green < 0)
-                    { green = 0; }
-
-                    if (red > 255)
-                    { red = 255; }
-                    else if (red < 0)
-                    { red = 0; }
-
-                    resultBuffer[byteOffset] = (byte)(blue);
-                    resultBuffer[byteOffset + 1] = (byte)(green);
-                    resultBuffer[byteOffset + 2] = (byte)(red);
-                    resultBuffer[byteOffset + 3] = 255;
-                }
-            }
-
-
-            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width,
-                                            sourceBitmap.Height);
-
-
-            BitmapData resultData =
-                       resultBitmap.LockBits(new Rectangle(0, 0,
-                       resultBitmap.Width, resultBitmap.Height),
-                                        ImageLockMode.WriteOnly,
-                                    PixelFormat.Format32bppArgb);
-
-
-            Marshal.Copy(resultBuffer, 0, resultData.Scan0,
-                                       resultBuffer.Length);
-            resultBitmap.UnlockBits(resultData);
-
-
-            return resultBitmap;
-        }
-        public static Bitmap ConvolutionFilter(Bitmap sourceBitmap, double[,] xFilterMatrix, double[,] yFilterMatrix, double factor = 1, int bias = 0, bool grayscale = false)
-        {
-            BitmapData sourceData =
-                           sourceBitmap.LockBits(new Rectangle(0, 0,
-                           sourceBitmap.Width, sourceBitmap.Height),
-                                             ImageLockMode.ReadOnly,
-                                        PixelFormat.Format32bppArgb);
-
-
-            byte[] pixelBuffer = new byte[sourceData.Stride *
-                                          sourceData.Height];
-
-
-            byte[] resultBuffer = new byte[sourceData.Stride *
-                                           sourceData.Height];
-
-
-            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0,
-                                       pixelBuffer.Length);
-
-
-            sourceBitmap.UnlockBits(sourceData);
-
-
-            if (grayscale == true)
-            {
-                float rgb = 0;
-
-
-                for (int k = 0; k < pixelBuffer.Length; k += 4)
-                {
-                    rgb = pixelBuffer[k] * 0.11f;
-                    rgb += pixelBuffer[k + 1] * 0.59f;
-                    rgb += pixelBuffer[k + 2] * 0.3f;
-
-
-                    pixelBuffer[k] = (byte)rgb;
-                    pixelBuffer[k + 1] = pixelBuffer[k];
-                    pixelBuffer[k + 2] = pixelBuffer[k];
-                    pixelBuffer[k + 3] = 255;
-                }
-            }
-
-
-            double blueX = 0.0;
-            double greenX = 0.0;
-            double redX = 0.0;
-
-
-            double blueY = 0.0;
-            double greenY = 0.0;
-            double redY = 0.0;
-
-
-            double blueTotal = 0.0;
-            double greenTotal = 0.0;
-            double redTotal = 0.0;
-
-
-            int filterOffset = 1;
-            int calcOffset = 0;
-
-
-            int byteOffset = 0;
-
-
-            for (int offsetY = filterOffset; offsetY <
-                sourceBitmap.Height - filterOffset; offsetY++)
-            {
-                for (int offsetX = filterOffset; offsetX <
-                    sourceBitmap.Width - filterOffset; offsetX++)
-                {
-                    blueX = greenX = redX = 0;
-                    blueY = greenY = redY = 0;
-
-
-                    blueTotal = greenTotal = redTotal = 0.0;
-
-
-                    byteOffset = offsetY *
-                                 sourceData.Stride +
-                                 offsetX * 4;
-
-
-                    for (int filterY = -filterOffset;
-                        filterY <= filterOffset; filterY++)
+                    sumaVerde = sumaVerde / div;
+                    if (sumaVerde > 255)
                     {
-                        for (int filterX = -filterOffset;
-                            filterX <= filterOffset; filterX++)
-                        {
-                            calcOffset = byteOffset +
-                                         (filterX * 4) +
-                                         (filterY * sourceData.Stride);
-
-
-                            blueX += (double)
-                                      (pixelBuffer[calcOffset]) *
-                                      xFilterMatrix[filterY +
-                                                    filterOffset,
-                                                    filterX +
-                                                    filterOffset];
-
-
-                            greenX += (double)
-                                  (pixelBuffer[calcOffset + 1]) *
-                                      xFilterMatrix[filterY +
-                                                    filterOffset,
-                                                    filterX +
-                                                    filterOffset];
-
-
-                            redX += (double)
-                                  (pixelBuffer[calcOffset + 2]) *
-                                      xFilterMatrix[filterY +
-                                                    filterOffset,
-                                                    filterX +
-                                                    filterOffset];
-
-
-                            blueY += (double)
-                                      (pixelBuffer[calcOffset]) *
-                                      yFilterMatrix[filterY +
-                                                    filterOffset,
-                                                    filterX +
-                                                    filterOffset];
-
-
-                            greenY += (double)
-                                  (pixelBuffer[calcOffset + 1]) *
-                                      yFilterMatrix[filterY +
-                                                    filterOffset,
-                                                    filterX +
-                                                    filterOffset];
-
-
-                            redY += (double)
-                                  (pixelBuffer[calcOffset + 2]) *
-                                      yFilterMatrix[filterY +
-                                                    filterOffset,
-                                                    filterX +
-                                                    filterOffset];
-                        }
+                        sumaVerde = 255;
+                    }
+                    else if (sumaVerde < 0)
+                    {
+                        sumaVerde = 0;
                     }
 
+                    //azul
+                    int sumaAzul = color[0].R * matrixFiltro[0, 0]
+                                 + color[1].R * matrixFiltro[1, 0]
+                                 + color[2].R * matrixFiltro[2, 0]
+                                 + color[3].R * matrixFiltro[0, 1]
+                                 + color[4].R * matrixFiltro[1, 1]
+                                 + color[5].R * matrixFiltro[2, 1]
+                                 + color[6].R * matrixFiltro[0, 2]
+                                 + color[7].R * matrixFiltro[1, 2]
+                                 + color[8].R * matrixFiltro[2, 2];
 
-                    blueTotal = Math.Sqrt((blueX * blueX) +
-                                          (blueY * blueY));
+                    sumaAzul = sumaAzul / div;
+                    if (sumaAzul > 255)
+                    {
+                        sumaAzul = 255;
+                    }
+                    else if (sumaAzul < 0)
+                    {
+                        sumaAzul = 0;
+                    }
 
+                    int xyGris = 0;
+                    if (gris)
+                    {
+                        xyGris = (sumaRojo + sumaAzul + sumaVerde) / 3;
+                        img.SetPixel(x, y, Color.FromArgb(xyGris, xyGris, xyGris));
+                    }
+                    else
+                    {
+                        img.SetPixel(x, y, Color.FromArgb(sumaRojo, sumaAzul, sumaVerde));
+                    }
 
-                    greenTotal = Math.Sqrt((greenX * greenX) +
-                                           (greenY * greenY));
-
-
-                    redTotal = Math.Sqrt((redX * redX) +
-                                         (redY * redY));
-
-
-                    if (blueTotal > 255)
-                    { blueTotal = 255; }
-                    else if (blueTotal < 0)
-                    { blueTotal = 0; }
-
-
-                    if (greenTotal > 255)
-                    { greenTotal = 255; }
-                    else if (greenTotal < 0)
-                    { greenTotal = 0; }
-
-
-                    if (redTotal > 255)
-                    { redTotal = 255; }
-                    else if (redTotal < 0)
-                    { redTotal = 0; }
-
-
-                    resultBuffer[byteOffset] = (byte)(blueTotal);
-                    resultBuffer[byteOffset + 1] = (byte)(greenTotal);
-                    resultBuffer[byteOffset + 2] = (byte)(redTotal);
-                    resultBuffer[byteOffset + 3] = 255;
                 }
             }
 
-
-            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width,
-                                             sourceBitmap.Height);
-
-
-            BitmapData resultData =
-                       resultBitmap.LockBits(new Rectangle(0, 0,
-                       resultBitmap.Width, resultBitmap.Height),
-                                        ImageLockMode.WriteOnly,
-                                    PixelFormat.Format32bppArgb);
-
-
-            Marshal.Copy(resultBuffer, 0, resultData.Scan0,
-                                       resultBuffer.Length);
-            resultBitmap.UnlockBits(resultData);
-
-
-            return resultBitmap;
+            return img;
         }
+
 
     }
 }

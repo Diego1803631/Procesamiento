@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FilterApp
@@ -17,11 +11,12 @@ namespace FilterApp
         public UserControl1()
         {
             InitializeComponent();
-            cbFilter.Items.Add("Lapiciano");
+            cbFilter.Items.Add("Laplaciano");
             cbFilter.Items.Add("Substracción de Media");
             cbFilter.Items.Add("Direccional NS");
             cbFilter.Items.Add("Sobel");
-            cbFilter.Items.Add("Menos-Lapiciano");
+            cbFilter.Items.Add("Menos-Laplaciano");
+            cbFilter.Items.Add("Negativo");
         }
 
         private void btnImport_Click(object sender, EventArgs e)
@@ -35,6 +30,10 @@ namespace FilterApp
                 var classImage = new Image(img1, lbFormat, imgOriginal);
                 classImage.getImage();
                 imgFilter.Image = imgOriginal.Image;
+            }
+            else
+            {
+                MessageBox.Show("No se agregó ninguna imagen.", "Advertencia");
             }
 
         }
@@ -58,7 +57,7 @@ namespace FilterApp
         {
             SaveFileDialog sf = new SaveFileDialog();
             sf.Filter = "JPG(*.JPG)|*.jpg";
-            if(sf.ShowDialog() == DialogResult.OK)
+            if (sf.ShowDialog() == DialogResult.OK)
             {
                 imgFilter.Image.Save(sf.FileName);
             }

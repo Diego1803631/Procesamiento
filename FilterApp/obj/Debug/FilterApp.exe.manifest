@@ -114,14 +114,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="FilterApp.exe" size="234976">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="FilterApp.exe" size="233440">
       <assemblyIdentity name="FilterApp" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>4kdwKfjsVNU7ne9gs5nJoTPq0yrGPFBc36bq56kQasE=</dsig:DigestValue>
+        <dsig:DigestValue>QeZU8+5FCTUJiDIKpoU3UvCVVPscl5doudFtqSq6tTI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

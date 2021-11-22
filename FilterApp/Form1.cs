@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FilterApp
 {
     public partial class MainForm : Form
     {
-        
+
         public MainForm()
         {
             InitializeComponent();
@@ -55,7 +48,7 @@ namespace FilterApp
         {
             SetActivePanel(ucLoadImage, activebar3, btnFormCamera);
             Camera camera = new Camera();
-            camera.Show();
+            camera.ShowDialog();
         }
     }
 }

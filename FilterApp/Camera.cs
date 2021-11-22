@@ -2,13 +2,7 @@
 using Emgu.CV.Structure;
 using Emgu.CV.VideoSurveillance;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FilterApp
@@ -28,6 +22,15 @@ namespace FilterApp
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
+            if (camera != null)
+            {
+                Application.Idle -= FrameProcedure;
+                Application.Idle -= FrameProcedure2;
+                Frame = null;
+                camera.Dispose();
+                cameraBox.Image = null;
+                lbFaces.Text = "0";
+            }
             camera = new Capture();
             camera.QueryFrame();
             Application.Idle += new EventHandler(FrameProcedure);
@@ -35,17 +38,21 @@ namespace FilterApp
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            Application.Idle -= FrameProcedure;
-            Application.Idle -= FrameProcedure2;
-            camera.Dispose();
-            cameraBox.Image = null;
-            lbFaces.Text = "0";
+            if (camera != null)
+            {
+                Application.Idle -= FrameProcedure;
+                Application.Idle -= FrameProcedure2;
+                Frame = null;
+                camera.Dispose();
+                cameraBox.Image = null;
+                lbFaces.Text = "0";
+            }
         }
 
         private void FrameProcedure(object sender, EventArgs e)
         {
             int faces = 0;
-            Color[] labelcolor = {Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Aqua, Color.Black, Color.Orange, Color.BlueViolet, Color.Azure, Color.Pink};
+            Color[] labelcolor = { Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Aqua, Color.Black, Color.Orange, Color.BlueViolet, Color.Azure, Color.Pink };
             Frame = camera.QueryFrame().Resize(700, 394, Emgu.CV.CvEnum.INTER.CV_INTER_CUBIC);
             grayFace = Frame.Convert<Gray, Byte>();
             MCvAvgComp[][] facesDetectedNow = grayFace.DetectHaarCascade(faceDetected, 1.2, 10, Emgu.CV.CvEnum.HAAR_DETECTION_TYPE.DO_CANNY_PRUNING, new Size(20, 20));
@@ -63,13 +70,22 @@ namespace FilterApp
         private IBGFGDetector<Bgr> forgroundDetector;
         private void btnMovement_Click(object sender, EventArgs e)
         {
+            if (camera != null)
+            {
+                Application.Idle -= FrameProcedure;
+                Application.Idle -= FrameProcedure2;
+                Frame = null;
+                camera.Dispose();
+                cameraBox.Image = null;
+                lbFaces.Text = "0";
+            }
             camera = new Capture();
             camera.QueryFrame();
             Application.Idle += new EventHandler(FrameProcedure2);
         }
         private void FrameProcedure2(object sender, EventArgs e)
         {
-            if(camera != null)
+            if (camera != null)
             {
                 motionHistory = new MotionHistory(1.0, 0.05, 0.5);
             }
@@ -93,12 +109,12 @@ namespace FilterApp
                 Image<Bgr, Byte> motionImage = new Image<Bgr, byte>(motionMask.Size);
                 motionImage[0] = motionMask;
                 double minArea = 100;
-                storage.Clear(); 
+                storage.Clear();
                 Seq<MCvConnectedComp> motionComponents = motionHistory.GetMotionComponents(storage);
 
                 foreach (MCvConnectedComp comp in motionComponents)
                 {
-         
+
                     if (comp.area < minArea) continue;
                     double angle, motionPixelCount;
                     motionHistory.MotionInfo(comp.rect, out angle, out motionPixelCount);
